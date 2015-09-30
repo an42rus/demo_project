@@ -1,0 +1,20 @@
+{% extends "registration/reg_base.html" %}
+{% load i18n %}
+
+{% block content %}
+    <div class="row">
+        <div class="alert alert-info">
+            <h4>{% trans "Please check your email to complete the registration process." %}</h4>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% comment %}
+**registration/registration_complete.html**
+
+Used after successful completion of the registration form. This
+template has no context variables of its own, and should simply inform
+the user that an email containing account-activation information has
+been sent.
+{% endcomment %}

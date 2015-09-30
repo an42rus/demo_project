@@ -1,0 +1,41 @@
+{% extends "registration/reg_base.html" %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block content %}
+    <div class="content">
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                <p><strong>{% trans "Oh snap!" %}</strong> {% trans "Please enter a correct username and password. Note that both fields are case-sensitive." %}</p>
+            </div>
+        {% endif %}
+        <form class="form-signin" role="form" action="" method="post">
+            {% csrf_token %}
+            {% if next %}
+                <input type="hidden" name="next" value="{{ next }}" />
+            {% endif %}
+            <center><h2 class="form-signin-heading">{% trans "Please register" %}</h2></center>
+            {% for field in form %}
+                {% include "registration/form_field.html" %}
+            {% endfor %}
+
+            <p><a href="{% url 'django.contrib.auth.views.login' %}">{% trans "Login" %}</a></p>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">{% trans 'Register' %}</button>
+        </form>
+    </div>
+{% endblock content %}
+
+
+
+
+{% comment %}
+**registration/registration_form.html**
+Used to show the form users will fill out to register. By default, has
+the following context:
+
+``form``
+    The registration form. This will be an instance of some subclass
+    of ``django.forms.Form``; consult `Django's forms documentation
+    <http://docs.djangoproject.com/en/dev/topics/forms/>`_ for
+    information on how to display this in a template.
+{% endcomment %}

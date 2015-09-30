@@ -1,0 +1,17 @@
+{% load attr_tag %}
+
+{% with field.label|stringformat:'s' as placeholder %}
+    {% with 'placeholder:'|add:placeholder as placeholder %}
+        {% with 'class:form-control,'|add:placeholder as attrs %}
+            {% if field.errors %}
+                <div class="form-group has-error">
+                    {{ field|field_attr:attrs }}
+                </div>
+            {% else %}
+                <div class="form-group">
+                    {{ field|field_attr:attrs }}
+                </div>
+            {% endif %}
+        {% endwith %}
+    {% endwith %}
+{% endwith %}

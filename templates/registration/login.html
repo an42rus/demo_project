@@ -1,0 +1,28 @@
+{% extends "registration/reg_base.html" %}
+{% load i18n %}
+
+
+{% block content %}
+    <div class="content">
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                <p><strong>{% trans "Oh snap!" %}</strong> {% trans "Please enter a correct username and password. Note that both fields are case-sensitive." %}</p>
+            </div>
+        {% endif %}
+        <form class="form-signin" role="form" action="{% url 'django.contrib.auth.views.login' %}" method="post">
+            {% csrf_token %}
+            {% if next %}
+                <input type="hidden" name="next" value="{{ next }}" />
+            {% else %}
+                <input type="hidden" name="next" value="{% url 'index' %}" />
+            {% endif %}
+            <center><h2 class="form-signin-heading">{% trans "Please log in" %}</h2></center>
+            {% for field in form %}
+                {% include "registration/form_field.html" %}
+            {% endfor %}
+            <p><a href="{% url 'auth_password_reset' %}">{% trans "Reset my password" %}</a></p>
+            <p><a href="{% url 'registration_register' %}">{% trans "Register" %}</a></p>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">{% trans 'Log in' %}</button>
+        </form>
+    </div>
+{% endblock content %}

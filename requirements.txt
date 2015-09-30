@@ -1,0 +1,10 @@
+Django==1.8.4
+TornadIO2==0.0.4
+argparse==1.2.1
+backports.ssl-match-hostname==3.4.0.2
+certifi==2015.9.6.2
+django-crispy-forms==1.5.2
+django-registration-redux==1.2
+simplejson==3.8.0
+tornado==4.2.1
+wsgiref==0.1.2

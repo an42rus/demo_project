@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load url from future %}
+{% load staticfiles %}
+
+{% block navbar_links %}
+    {% if user.is_authenticated %}
+        <li>
+            <a href="{% url 'player_list' %}">{% trans "Players" %}</a>
+        </li>
+{#        <li>#}
+{#            <a href="#">{% trans "Games" %}</a>#}
+{#        </li>#}
+        <li class="active">
+            <a href="{% url 'game' %}">{% trans "Game" %}</a>
+        </li>
+    {% endif %}
+{% endblock navbar_links %}
+
+{% block styles %}
+{% endblock styles %}
+
+{% block pre_content %}
+{% endblock pre_content %}
+
+{% block content %}
+    <div class="content">
+        <div id="header" class="center">
+        <h1>Tick-tack-toe</h1>
+            <div id="game_id" style="display: none;">{{ game_id }}</div>
+    </div>
+    <div id="status" class="center">
+        <h2 color="#3E96E2">Wait...</h2>
+    </div>
+    <div id="arrows">
+        <div class="center"><img onclick="changeField(0, 1);" src="{% static 'images/arrow-alt-up.png' %}"/></div>
+        <div>
+            <span class="helper"></span>
+            <img style="float:left;" onclick="changeField(-1, 0);"  src="{% static 'images/arrow-alt-left.png' %}"/>
+            <img style="float:right;" onclick="changeField(1, 0);"  src="{% static 'images/arrow-alt-right.png' %}"/>
+        </div>
+        <div class="center"><img onclick="changeField(0, -1);"  src="{% static 'images/arrow-alt-down.png' %}"/></div>
+    </div>
+    <div id="field" class="center">
+        <span id="coord_x">0</span>
+        <span id="coord_y">0</span>
+        <span class="gameover" style="display: none"><h1>GAME OVER</h1></span>
+    </div>
+
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'js/excanvas.compiled.js' %}"></script>
+    <script src="{% static 'js/script.js' %}"></script>
+    <script src="{% static 'js/socket.io.js' %}"></script>
+    <script type="text/javascript">
+        window.onload = function(){
+            var currentUserId = "{{ user.id }}";
+            var gameID = $('#game_id').text();
+            // ------------ initialization -------
+            canvas = document.createElement('canvas');
+            canvas.setAttribute("width", CANVAS_WIDTH);
+            canvas.setAttribute("height", CANVAS_HEIGHT);
+            $("#field").append(canvas);
+            if(typeof G_vmlCanvasManager !== "undefined")  // hack for IE
+                G_vmlCanvasManager.initElement(canvas);
+            context = canvas.getContext('2d');
+            drawBG(context);
+
+            socket = io.connect("http://localhost:8989/game/", {
+                rememberTransport: false,
+                'try multiple transports': false,
+                transports: [
+                    'xhr-polling',
+                    'jsonp-polling'
+                ]
+            });
+
+            socket.emit("get_game", {"game_id": gameID, "user_id": currentUserId});
+
+            // ------------ socket events -------
+            socket.on('step', function(data) {
+                var x = data["x"], y = data["y"];
+                opponentStep(x, y);
+            });
+
+            socket.on('opponent_disconnected', function(data) {
+                $("#status h2").html(data);
+                $("#status h2").css('color', 'red')
+            });
+
+            socket.on('message', function(message) {
+                $("#message_log").append(message);
+            });
+
+            socket.on('settings', function(data) {
+                if (!gameID){
+                    gameID = data['game_id'];
+                    $('#game_id').text(data['game_id']);
+                }
+                curr_player = data["user"];
+                other_player = 3 - curr_player;
+                alert("Start game!");
+                if(curr_player === 1){
+                    addEvent();
+                    $("#status h2").html("You move");
+                    $("#status h2").css('color', '#129925');
+                }else{
+                    $("#status h2").html("Opponent's move");
+                    $("#status h2").css('color', '#3E96E2');
+                }
+            });
+
+            socket.on('disconnect', function() {
+                $("#message_log").append('disconnect');
+                setTimeout(socket.socket.reconnect, 5000);
+            });
+        }
+    </script>
+{% endblock scripts %}
