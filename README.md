@@ -13,7 +13,7 @@ Put to your settings_local.py:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_USE_TLS = True
     EMAIL_HOST = 'smtp.gmail.com'
-    EMAIL_HOST_USER = 'example@gmai.com'
+    EMAIL_HOST_USER = 'example@gmail.com'
     DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
     EMAIL_HOST_PASSWORD = 'example_password'
     EMAIL_PORT = 587
